@@ -3,8 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import '~~/styles/main-page.css';
 
-import { GenericContract } from 'eth-components/ant/generic-contract';
-import { useContractReader, useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks';
+import { useBalance, useEthersAdaptorFromProviderOrSigners } from 'eth-hooks';
 import { useEthersContext } from 'eth-hooks/context';
 import { useDexEthPrice } from 'eth-hooks/dapps';
 import { asEthersAdaptor } from 'eth-hooks/functions';
@@ -17,7 +16,6 @@ import { useScaffoldProviders as useScaffoldAppProviders } from '~~/components/m
 import { Hints, ExampleUI } from '~~/components/pages';
 import { BURNER_FALLBACK_ENABLED, MAINNET_PROVIDER } from '~~/config/appConfig';
 import { useAppContracts, useConnectAppContracts, useLoadAppContracts } from '~~/config/contractContext';
-import { NETWORKS } from '~~/models/constants/networks';
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -71,19 +69,18 @@ export const Main: FC = () => {
   // -----------------------------
 
   // init contracts
-  const yourContract = useAppContracts('YourContract', ethersContext.chainId);
-  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
+  const soulBoundNftFactory = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
 
   // keep track of a variable from the contract in the local React state:
-  const [purpose, update] = useContractReader(
+  /*  const [purpose, update] = useContractReader(
     yourContract,
     yourContract?.purpose,
     [],
     yourContract?.filters.SetPurpose()
   );
-
+*/
   // 📟 Listen for broadcast events
-  const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0);
+  // const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0);
 
   // -----------------------------
   // .... 🎇 End of examples
@@ -125,16 +122,6 @@ export const Main: FC = () => {
               yourCurrentBalance={yourCurrentBalance}
               price={ethPrice}
             />
-          </Route>
-          <Route path="/mainnetdai">
-            {MAINNET_PROVIDER != null && (
-              <GenericContract
-                contractName="DAI"
-                contract={mainnetDai}
-                mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-                blockExplorer={NETWORKS.mainnet.blockExplorer}
-              />
-            )}
           </Route>
           {/* Subgraph also disabled in MainPageMenu, it does not work, see github issue! */}
           {/*

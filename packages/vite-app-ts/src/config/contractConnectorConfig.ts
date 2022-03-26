@@ -24,9 +24,9 @@ export const contractConnectorConfig = () => {
   try {
     const result = {
       // 🙋🏽‍♂️ Add your hadrdhat contracts here
-      YourContract: createConnectorForHardhatContract(
-        'YourContract',
-        hardhatContracts.YourContract__factory,
+      SoulBoundNFTFactory: createConnectorForHardhatContract(
+        'SoulBoundNFTFactory',
+        hardhatContracts.SoulBoundNFTFactory__factory,
         hardhatContractsJson
       ),
 

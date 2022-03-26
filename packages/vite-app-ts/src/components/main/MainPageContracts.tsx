@@ -4,7 +4,6 @@ import React, { FC } from 'react';
 
 import { IScaffoldAppProviders } from '~~/components/main/hooks/useScaffoldAppProviders';
 import { useAppContracts } from '~~/config/contractContext';
-import { NETWORKS } from '~~/models/constants/networks';
 export interface IMainPageContractsProps {
   scaffoldAppProviders: IScaffoldAppProviders;
 }
@@ -18,8 +17,7 @@ export interface IMainPageContractsProps {
  */
 export const MainPageContracts: FC<IMainPageContractsProps> = (props) => {
   const ethersContext = useEthersContext();
-  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
-  const yourContract = useAppContracts('YourContract', ethersContext.chainId);
+  const soulBoundNFTFactory = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
 
   if (ethersContext.account == null) {
     return <></>;
@@ -28,30 +26,12 @@ export const MainPageContracts: FC<IMainPageContractsProps> = (props) => {
   return (
     <>
       <>
-        {/* **********
-          ❓ this scaffolding is full of commonly used components
-          this <Contract/> component will automatically parse your ABI
-          and give you a form to interact with it locally
-        ********** */}
         <GenericContract
-          contractName="YourContract"
-          contract={yourContract}
+          contractName="SoulBoundNFTFactory"
+          contract={soulBoundNFTFactory}
           mainnetAdaptor={props.scaffoldAppProviders.mainnetAdaptor}
           blockExplorer={props.scaffoldAppProviders.targetNetwork.blockExplorer}
         />
-
-        {/* **********
-         * ❓ uncomment for a second contract:
-         ********** */}
-        {/*
-          <GenericContract
-            contractName="SecondContract"
-            contract={contract={contractList?.['SecondContract']}
-            mainnetProvider={props.appProviders.mainnetProvider}
-            blockExplorer={props.appProviders.targetNetwork.blockExplorer}
-            contractConfig={props.contractConfig}
-          />
-        */}
       </>
     </>
   );

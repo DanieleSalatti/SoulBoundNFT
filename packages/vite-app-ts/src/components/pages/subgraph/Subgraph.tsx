@@ -43,7 +43,7 @@ export const Subgraph: FC<ISubgraphProps> = (props) => {
   const ethersContext = useEthersContext();
   const [gasPrice] = useGasPrice(ethersContext.chainId, 'fast');
   const tx = transactor(ethComponentsSettings, ethersContext?.signer, gasPrice);
-  const yourContract = useAppContracts('YourContract', ethersContext.chainId);
+  const yourContract = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
 
   const EXAMPLE_GQL = `
     {
@@ -185,7 +185,7 @@ export const Subgraph: FC<ISubgraphProps> = (props) => {
             onClick={(): void => {
               console.log('newPurpose', newPurpose);
               /* look how you call setPurpose on your contract: */
-              void tx?.(yourContract?.setPurpose(newPurpose));
+              // void tx?.(yourContract?.setPurpose(newPurpose));
             }}>
             Set Purpose
           </Button>
