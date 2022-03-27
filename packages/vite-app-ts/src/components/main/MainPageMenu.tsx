@@ -32,13 +32,13 @@ export const MainPageMenu: FC<IMainPageMenuProps> = (props) => (
         Hints
       </Link>
     </Menu.Item>
-    <Menu.Item key="/exampleui">
+    <Menu.Item key="/address/0x">
       <Link
         onClick={(): void => {
-          props.setRoute('/exampleui');
+          props.setRoute('/address/0x');
         }}
-        to="/exampleui">
-        ExampleUI
+        to="/address/0x">
+        Collections
       </Link>
     </Menu.Item>
     <Menu.Item key="/mainnetdai">

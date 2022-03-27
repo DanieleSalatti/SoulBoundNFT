@@ -11,6 +11,8 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+import "./Base64.sol";
+
 /**
  *
  * SoulBoundNFT
@@ -28,15 +30,6 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-  //===== State =====//
-
-  string internal _organization;
-  bool internal _transferable;
-  mapping(uint256 => string) internal _nickNames;
-  mapping(uint256 => address) internal _mintedTo;
-  Counters.Counter internal _counter;
-  string internal svgLogo;
-
   //===== Interfaces =====//
 
   struct TokenData {
@@ -44,6 +37,7 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     address owner;
     address mintedTo;
     string nickName;
+    string role;
     string organization;
     string tokenName;
   }
@@ -52,9 +46,24 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     uint256 id;
     address owner;
     string nickName;
+    string role;
     string organization;
     string tokenName;
   }
+
+  struct TokenOwnerInfo {
+    string nickName;
+    string role;
+  }
+
+  //===== State =====//
+
+  string internal _organization;
+  bool internal _transferable;
+  mapping(uint256 => TokenOwnerInfo) internal _tokenOwnerInfo;
+  mapping(uint256 => address) internal _mintedTo;
+  Counters.Counter internal _counter;
+  string internal svgLogo;
 
   //===== Events =====//
 
@@ -89,10 +98,16 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   }
 
   //===== External Functions =====//
-  function batchMint(address[] calldata toAddresses, string[] calldata nickNames) external onlyRole(MINTER_ROLE) {
+  function batchMint(
+    address[] calldata toAddresses,
+    string[] calldata nickNames,
+    string[] calldata roles
+  ) external onlyRole(MINTER_ROLE) {
     require(toAddresses.length == nickNames.length, "SoulBoundNFT: Array length mismatch");
+    require(toAddresses.length == roles.length, "SoulBoundNFT: Array length mismatch");
+
     for (uint256 i = 0; i < toAddresses.length; i++) {
-      _mint(toAddresses[i], nickNames[i]);
+      _mint(toAddresses[i], nickNames[i], roles[i]);
     }
   }
 
@@ -127,8 +142,12 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     return 1;
   }
 
-  function mint(address to, string calldata nickName) public onlyRole(MINTER_ROLE) {
-    _mint(to, nickName);
+  function mint(
+    address to,
+    string calldata nickName,
+    string calldata role
+  ) public onlyRole(MINTER_ROLE) {
+    _mint(to, nickName, role);
   }
 
   function organization() public view returns (string memory) {
@@ -144,7 +163,11 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   }
 
   function nickNameOf(uint256 tokenId) public view returns (string memory) {
-    return _nickNames[tokenId];
+    return _tokenOwnerInfo[tokenId].nickName;
+  }
+
+  function roleOf(uint256 tokenId) public view returns (string memory) {
+    return _tokenOwnerInfo[tokenId].role;
   }
 
   function nextId() public view returns (uint256) {
@@ -152,12 +175,12 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   }
 
   function tokenDataOf(uint256 tokenId) public view returns (TokenData memory) {
-    TokenData memory tokenData = TokenData(tokenId, ownerOf(tokenId), mintedTo(tokenId), nickNameOf(tokenId), organization(), name());
+    TokenData memory tokenData = TokenData(tokenId, ownerOf(tokenId), mintedTo(tokenId), nickNameOf(tokenId), roleOf(tokenId), organization(), name());
     return tokenData;
   }
 
   function tokenURI(uint256 tokenId) public view override exists(tokenId) returns (string memory) {
-    TokenURIParams memory params = TokenURIParams(tokenId, mintedTo(tokenId), nickNameOf(tokenId), organization(), name());
+    TokenURIParams memory params = TokenURIParams(tokenId, mintedTo(tokenId), nickNameOf(tokenId), roleOf(tokenId), organization(), name());
     return constructTokenURI(params);
   }
 
@@ -165,13 +188,24 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
    * @notice Construct an ERC721 token URI.
    */
   function constructTokenURI(TokenURIParams memory params) internal view returns (string memory) {
-    bytes memory svg = abi.encodePacked(
-      "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1200 1600' width='1200' height='1600'>",
-      svgLogo,
-      "<text style='font: bold 100px sans-serif;' text-anchor='middle' alignment-baseline='central' x='600' y='1250'>0xDarni</text>",
-      "<text style='font: bold 100px sans-serif;' text-anchor='middle' alignment-baseline='central' x='600' y='1350'>Founder</text>",
-      "<text style='font: bold 100px sans-serif;' text-anchor='middle' alignment-baseline='central' x='600' y='1450'>Vector37</text>",
-      "</svg>"
+    // bytes memory svg =
+    string memory svg = Base64.encode(
+      bytes(
+        abi.encodePacked(
+          "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1200 1600' width='1200' height='1600'>",
+          svgLogo,
+          "<text style='font: bold 100px sans-serif;' text-anchor='middle' alignment-baseline='central' x='600' y='1250'>",
+          params.nickName,
+          "</text>",
+          "<text style='font: bold 100px sans-serif;' text-anchor='middle' alignment-baseline='central' x='600' y='1350'>",
+          params.role,
+          "</text>",
+          "<text style='font: bold 100px sans-serif;' text-anchor='middle' alignment-baseline='central' x='600' y='1450'>",
+          _organization,
+          "</text>",
+          "</svg>"
+        )
+      )
     );
 
     // prettier-ignore
@@ -181,11 +215,13 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
           Strings.toString(params.id),
           ', "nickName": "',
           params.nickName,
+          '", "role": "',
+          params.role,
           '", "organization": "',
           params.organization,
           '", "tokenName": "',
           params.tokenName,
-          '", "image": "data:image/svg+xml;utf8,',
+          '", "image": "data:image/svg+xml;base64,',
           svg,
           '" }'
         ));
@@ -230,9 +266,14 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
 
   //===== Internal Functions =====//
 
-  function _mint(address to, string calldata nickName) internal {
+  function _mint(
+    address to,
+    string calldata nickName,
+    string calldata role
+  ) internal {
     uint256 tokenId = _counter.current();
-    _nickNames[tokenId] = nickName;
+    _tokenOwnerInfo[tokenId].nickName = nickName;
+    _tokenOwnerInfo[tokenId].role = role;
     _mintedTo[tokenId] = to;
     _safeMint(to, tokenId);
     _counter.increment();

@@ -3,10 +3,11 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./SoulBoundNFT.sol";
 
-contract SoulBoundNFTFactory {
+contract SoulBoundNFTFactory is Ownable {
   //===== State =====//
 
   struct ContractInfo {
@@ -17,6 +18,7 @@ contract SoulBoundNFTFactory {
     address owner;
   }
 
+  address public beaconAddress;
   address[] public proxies;
 
   mapping(address => address[]) ownerToProxyAddress;
@@ -26,8 +28,10 @@ contract SoulBoundNFTFactory {
 
   event SoulBoundCreated(address proxyAddress, string name, string symbol, string organization, bool transferable, address owner);
 
-  event UpgradeableBeaconCreated(address indexed createdBy, UpgradeableBeacon beacon, address initialImplementation);
-  event BeaconProxyCreated(UpgradeableBeacon indexed beacon, BeaconProxy beaconProxy);
+  event UpgradeableBeaconCreated(address indexed createdBy, address beacon, address initialImplementation);
+  event BeaconProxyCreated(address indexed beacon, address beaconProxy);
+
+  constructor() {}
 
   function payload(
     string memory name,
@@ -42,31 +46,30 @@ contract SoulBoundNFTFactory {
   /// newUpgradeableBeacon creates a new beacon with an initial implementation set
   /// @param initialImplementation sets the first iteration of logic for proxies
   // TODO(0xDarni): this function address should be restricted
-  function newUpgradeableBeacon(address initialImplementation) public returns (UpgradeableBeacon) {
-    UpgradeableBeacon beacon = new UpgradeableBeacon(initialImplementation);
+  function newUpgradeableBeacon(address initialImplementation) public onlyOwner returns (UpgradeableBeacon beacon) {
+    beacon = new UpgradeableBeacon(initialImplementation);
     beacon.transferOwnership(msg.sender);
 
-    emit UpgradeableBeaconCreated(msg.sender, beacon, initialImplementation);
+    emit UpgradeableBeaconCreated(msg.sender, address(beacon), initialImplementation);
 
-    return beacon;
+    beaconAddress = address(beacon);
   }
 
   /// newBeaconProxy creates and initializes a new proxy for the given UpgradeableBeacon
-  /// @param beacon is address of the beacon
   function newBeaconProxy(
-    UpgradeableBeacon beacon,
     string memory name,
     string memory symbol,
     string memory organization,
     bool transferable,
     address tokenOwner
-  ) public returns (BeaconProxy) {
+  ) public returns (BeaconProxy beaconProxy) {
     bytes memory data = payload(name, symbol, organization, transferable, tokenOwner);
-    BeaconProxy beaconProxy = new BeaconProxy(address(beacon), data);
 
-    ownerToProxyAddress[tokenOwner].push(address(beacon));
+    beaconProxy = new BeaconProxy(beaconAddress, data);
 
-    proxyAddressToContractInfo[address(beacon)] = ContractInfo({
+    ownerToProxyAddress[tokenOwner].push(address(beaconProxy));
+
+    proxyAddressToContractInfo[address(beaconProxy)] = ContractInfo({
       name: name,
       symbol: symbol,
       organization: organization,
@@ -76,11 +79,9 @@ contract SoulBoundNFTFactory {
 
     proxies.push(address(beaconProxy));
 
-    emit BeaconProxyCreated(beacon, beaconProxy);
+    emit BeaconProxyCreated(beaconAddress, address(beaconProxy));
 
     emit SoulBoundCreated(address(beaconProxy), name, symbol, organization, transferable, tokenOwner);
-
-    return beaconProxy;
   }
 
   function getProxiesByOwnerAddress(address _owner) public view returns (address[] memory) {

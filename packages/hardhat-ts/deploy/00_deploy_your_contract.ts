@@ -10,6 +10,8 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
+  const OWNER_ADDRESS = '0x523d007855B3543797E0d3D462CB44B601274819'; // 0xDarni
+
   const sbDeploymnet = await deploy('SoulBoundNFT', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
@@ -21,8 +23,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     from: deployer,
     log: true,
   });
-
-  const OWNER_ADDRESS = '0x523d007855B3543797E0d3D462CB44B601274819'; // 0xDarni
 
   const sbFactory = await ethers.getContractAt('SoulBoundNFTFactory', sbFactoryDeployment.address);
 
@@ -47,6 +47,9 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const upgradeableBeacon = UpgradeableBeacon.attach(beaconAddr);
 
   assert((await upgradeableBeacon.implementation()) == sbDeploymnet.address, 'Address of implementation is not correct');
+
+  await sbFactory.transferOwnership(OWNER_ADDRESS);
+  await upgradeableBeacon.transferOwnership(OWNER_ADDRESS);
 };
 export default func;
 func.tags = ['SoulBoundNFT', 'SoulBoundNFTFactory'];
