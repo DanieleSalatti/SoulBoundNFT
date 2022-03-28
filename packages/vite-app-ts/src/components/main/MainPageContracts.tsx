@@ -18,6 +18,7 @@ export interface IMainPageContractsProps {
 export const MainPageContracts: FC<IMainPageContractsProps> = (props) => {
   const ethersContext = useEthersContext();
   const soulBoundNFTFactory = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
+  const soulBoundNFTProxyRegistry = useAppContracts('SoulBoundNFTProxyRegistry', ethersContext.chainId);
 
   if (ethersContext.account == null) {
     return <></>;
@@ -29,6 +30,12 @@ export const MainPageContracts: FC<IMainPageContractsProps> = (props) => {
         <GenericContract
           contractName="SoulBoundNFTFactory"
           contract={soulBoundNFTFactory}
+          mainnetAdaptor={props.scaffoldAppProviders.mainnetAdaptor}
+          blockExplorer={props.scaffoldAppProviders.targetNetwork.blockExplorer}
+        />
+        <GenericContract
+          contractName="SoulBoundNFTProxyRegistry"
+          contract={soulBoundNFTProxyRegistry}
           mainnetAdaptor={props.scaffoldAppProviders.mainnetAdaptor}
           blockExplorer={props.scaffoldAppProviders.targetNetwork.blockExplorer}
         />

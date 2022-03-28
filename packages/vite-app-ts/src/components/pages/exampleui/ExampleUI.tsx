@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Button, Card, Divider, Input, List } from 'antd';
-import { Address, AddressInput } from 'eth-components/ant';
+import { parseEther } from '@ethersproject/units';
+import { Button, Card, Divider, Input, List, Checkbox } from 'antd';
+import { Address, AddressInput, EtherInput } from 'eth-components/ant';
 import { transactor } from 'eth-components/functions';
 import { EthComponentsSettingsContext } from 'eth-components/models';
 import { useContractReader, useGasPrice } from 'eth-hooks';
@@ -12,8 +13,9 @@ import React, { useState, FC, useContext, ReactNode, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useAppContracts } from '~~/config/contractContext';
-import { SoulBoundNFTFactory, SoulBoundNFT__factory } from '~~/generated/contract-types';
+import { SoulBoundNFT__factory } from '~~/generated/contract-types';
 import { SoulBoundNFT } from '~~/generated/contract-types/SoulBoundNFT';
+import { SoulBoundNFTProxyRegistry } from '~~/generated/contract-types/SoulBoundNFTProxyRegistry';
 // import { SetPurposeEvent } from '~~/generated/contract-types/YourContract';
 
 export interface IExampleUIProps {
@@ -30,7 +32,7 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
 
   type ContractInformation = {
     address: string;
-    contractInformation: SoulBoundNFTFactory.ContractInfoStructOutput | undefined;
+    contractInformation: SoulBoundNFTProxyRegistry.ContractInfoStructOutput | undefined;
   };
 
   type TProxyContractData = {
@@ -39,51 +41,71 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
     nextId: BigNumber;
     paused: boolean;
     mintable: boolean;
-    mintPrice: number;
+    mintPrice: string;
     version: BigNumber;
   };
 
   const params = useParams<UrlParams>();
 
+  const ethersContext = useEthersContext();
+
+  const [name, setName] = useState('');
+  const [symbol, setSymbol] = useState('');
+  const [organization, setOrganization] = useState('');
+  const [defaultRole, setDefaultRole] = useState('');
+  const [transferable, setTransferable] = useState(false);
+  const [mintable, setMintable] = useState(false);
+  const [mintPrice, setMintPrice] = useState('0');
+
   const [svg, setSvg] = useState('');
+
   const [addressTo, setAddressTo] = useState('');
   const [nickname, setNickname] = useState('');
   const [role, setRole] = useState('');
-  const ethersContext = useEthersContext();
+  const [amount, setAmount] = useState('0');
+
   const [yourCollectibles, setYourCollectibles] = useState<any[]>();
 
   const signer = ethersContext.signer;
   const address = ethersContext.account ?? '';
 
   const soulBoundNFTFactory = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
+  const soulBoundNFTProxyRegistry = useAppContracts('SoulBoundNFTProxyRegistry', ethersContext.chainId);
 
-  // const yourContract = useAppContracts('YourContract', ethersContext.chainId);
-  const [collections] = useContractReader(soulBoundNFTFactory, soulBoundNFTFactory?.getProxiesByOwnerAddress, [
-    address,
-  ]);
-
-  // const [minted] = useContractReader()
+  const [collections] = useContractReader(
+    soulBoundNFTProxyRegistry,
+    soulBoundNFTProxyRegistry?.getProxiesByOwnerAddress,
+    [address]
+  );
 
   const [contractsInfo, setContractsInfo] = useState<ContractInformation[]>();
 
-  const [proxyContract, setProxyContract] = useState<SoulBoundNFT>();
+  const [proxyContract, setProxyContract] = useState<SoulBoundNFT | null>();
 
-  const [proxyContractData, setProxyContractData] = useState<TProxyContractData>();
+  const [proxyContractData, setProxyContractData] = useState<TProxyContractData | null>();
 
-  const loadProxy = (address: string): void => {
-    if (params.contractAddress && params.contractAddress !== '0x' && ethersContext.signer) {
-      setProxyContract(SoulBoundNFT__factory.connect(params.contractAddress, ethersContext.signer));
+  const loadProxy = (proxyAddress: string): void => {
+    if (proxyAddress && proxyAddress !== '0x' && ethersContext.signer) {
+      setProxyContract(SoulBoundNFT__factory.connect(proxyAddress, ethersContext.signer));
     }
   };
 
   useEffect(() => {
+    if (params.contractAddress === '0x' || params.contractAddress === null || params.contractAddress === undefined) {
+      setProxyContract(null);
+      setProxyContractData(null);
+      return;
+    }
     loadProxy(params.contractAddress);
-  }, [params.contractAddress]);
+  }, [params.contractAddress, ethersContext.signer]);
 
   const fetchContractInfoByAddress = async (
     address: string
-  ): Promise<{ address: string; contractInformation: SoulBoundNFTFactory.ContractInfoStructOutput | undefined }> => {
-    const contractInformation = await soulBoundNFTFactory?.getContractInfoByProxyAddress(address);
+  ): Promise<{
+    address: string;
+    contractInformation: SoulBoundNFTProxyRegistry.ContractInfoStructOutput | undefined;
+  }> => {
+    const contractInformation = await soulBoundNFTProxyRegistry?.getContractInfoByProxyAddress(address);
     return { address, contractInformation };
   };
 
@@ -102,23 +124,23 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
   }, [collections]);
 
   const fetchProxyValues = async (): Promise<void> => {
-    if (proxyContract === undefined) return;
+    if (proxyContract === undefined || proxyContract === null) return;
     await Promise.all([
       proxyContract.organization(),
       proxyContract.transferable(),
       proxyContract.nextId(),
       proxyContract.paused(),
-      // mintable
-      // mintPrice
+      proxyContract.mintable(),
+      proxyContract.mintPrice(),
       proxyContract.version(),
-    ]).then(([organization, transferable, nextId, paused, version]) => {
+    ]).then(([organization, transferable, nextId, paused, mintable, mintPrice, version]) => {
       setProxyContractData({
         organization,
         transferable,
         nextId,
         paused,
-        mintable: false,
-        mintPrice: 0,
+        mintable,
+        mintPrice: mintPrice.toString(),
         version,
       });
     });
@@ -128,37 +150,44 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
     void fetchProxyValues();
   }, [proxyContract]);
 
-  useEffect(() => {
-    const updateYourCollectibles = async (): Promise<void> => {
-      const collectibleUpdate = [];
-      if (proxyContractData === undefined || proxyContract === undefined) return;
-      for (let tokenIndex = 0; BigNumber.from(tokenIndex) < proxyContractData.nextId; tokenIndex++) {
-        try {
-          console.log('tokenId', tokenIndex);
-          const tokenURI = await proxyContract.tokenURI(tokenIndex);
-          console.log('TOKENURI', tokenURI);
-          const jsonManifestString = tokenURI.substring(27);
-          console.log('jsonManifestString', jsonManifestString);
-          /*
+  const updateYourCollectibles = async (): Promise<void> => {
+    const collectibleUpdate = [];
+    if (
+      proxyContractData === undefined ||
+      proxyContractData === null ||
+      proxyContract === undefined ||
+      proxyContract === null
+    )
+      return;
+    for (let tokenIndex = 0; BigNumber.from(tokenIndex) < proxyContractData.nextId; tokenIndex++) {
+      try {
+        console.log('tokenId', tokenIndex);
+        const tokenURI = await proxyContract.tokenURI(tokenIndex);
+        console.log('TOKENURI', tokenURI);
+        const jsonManifestString = tokenURI.substring(27);
+        console.log('jsonManifestString', jsonManifestString);
+        /*
           const ipfsHash = tokenURI.replace("https://ipfs.io/ipfs/", "");
           console.log("ipfsHash", ipfsHash);
           const jsonManifestBuffer = await getFromIPFS(ipfsHash);
         */
-          try {
-            const jsonManifest = JSON.parse(jsonManifestString);
-            console.log('jsonManifest', jsonManifest);
-            collectibleUpdate.push({ id: tokenIndex, uri: tokenURI, owner: address, ...jsonManifest });
-          } catch (e) {
-            console.log(e);
-          }
+        try {
+          const jsonManifest = JSON.parse(jsonManifestString);
+          console.log('jsonManifest', jsonManifest);
+          collectibleUpdate.push({ id: tokenIndex, uri: tokenURI, owner: address, ...jsonManifest });
         } catch (e) {
           console.log(e);
         }
+      } catch (e) {
+        console.log(e);
       }
-      setYourCollectibles(collectibleUpdate.reverse());
-    };
+    }
+    setYourCollectibles(collectibleUpdate.reverse());
+  };
+
+  useEffect(() => {
     void updateYourCollectibles();
-  }, [address, proxyContractData?.nextId]);
+  }, [proxyContract, address, proxyContractData?.nextId]);
 
   // const [setPurposeEvents] = useEventListener<SetPurposeEvent>(yourContract, yourContract?.filters.SetPurpose(), 1);
 
@@ -172,25 +201,126 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
     <div>
       <div style={{ border: '1px solid #cccccc', padding: 16, width: 400, margin: 'auto', marginTop: 64 }}>
         <h2>NFT Collections</h2>
+        <div style={{ margin: 8 }}>
+          <h3>Create</h3>
+          <Input
+            style={{ marginTop: 8 }}
+            placeholder="name"
+            value={name}
+            onChange={(e): void => {
+              setName(e.target.value);
+            }}
+          />
+          <Input
+            style={{ marginTop: 8 }}
+            placeholder="symbol"
+            value={symbol}
+            onChange={(e): void => {
+              setSymbol(e.target.value);
+            }}
+          />
+          <Input
+            style={{ marginTop: 8 }}
+            placeholder="organization"
+            value={organization}
+            onChange={(e): void => {
+              setOrganization(e.target.value);
+            }}
+          />
+          <Input
+            style={{ marginTop: 8 }}
+            placeholder="default role"
+            value={defaultRole}
+            onChange={(e): void => {
+              setDefaultRole(e.target.value);
+            }}
+          />
+          <Checkbox
+            style={{ marginTop: 8 }}
+            checked={transferable}
+            onChange={(e): void => {
+              setTransferable(e.target.checked);
+            }}>
+            Transferable
+          </Checkbox>
+          <Checkbox
+            style={{ marginTop: 8, marginBottom: 8 }}
+            checked={mintable}
+            onChange={(e): void => {
+              setMintable(e.target.checked);
+            }}>
+            Mintable
+          </Checkbox>
+          <EtherInput
+            placeholder="mint price"
+            onChange={(value): void => setMintPrice(value)}
+            price={price}
+            value={mintPrice}
+            etherMode={true}
+          />
+          <Button
+            style={{ marginTop: 8 }}
+            onClick={async (): Promise<void> => {
+              const result = tx?.(
+                soulBoundNFTFactory?.newBeaconProxy(
+                  name,
+                  symbol,
+                  organization,
+                  defaultRole,
+                  transferable,
+                  mintable,
+                  parseEther('' + mintPrice),
+                  address
+                ),
+                (update: any) => {
+                  console.log('📡 Transaction Update:', update);
+                  if (update && (update.status === 'confirmed' || update.status === 1)) {
+                    console.log(' 🍾 Transaction ' + update.hash + ' finished!');
+                    console.log(
+                      ' ⛽️ ' +
+                        update.gasUsed +
+                        '/' +
+                        (update.gasLimit || update.gas) +
+                        ' @ ' +
+                        parseFloat(update.gasPrice) / 1000000000 +
+                        ' gwei'
+                    );
+                  }
+                }
+              );
+              console.log('awaiting metamask/web3 confirm result...', result);
+              console.log(await result);
+            }}>
+            Create Membership
+          </Button>
+        </div>
+        <Divider />
         <h4>List of collections you are the owner of</h4>
         <List
           bordered
           dataSource={contractsInfo}
           renderItem={(item): ReactNode => {
+            if (item.contractInformation === undefined) return;
             return (
               <List.Item key={item.address}>
                 <Address address={item.address} ensProvider={mainnetProvider} fontSize={16} />
                 <br />
-                {item?.contractInformation?.name} ({item?.contractInformation?.symbol}) -{' '}
-                {item?.contractInformation?.organization}
+                {item?.contractInformation.name} ({item.contractInformation.symbol}) -{' '}
+                {item?.contractInformation.organization}
+                {/*
                 <br />
-                Transferable on create: {item?.contractInformation?.transferable ? 'YES' : 'NO'}
+                Transferable on create: {item.contractInformation.transferable ? 'YES' : 'NO'}
+                <br />
+                Mintable on create: {item.contractInformation.mintable ? 'YES' : 'NO'}
+                <br />
+                Mint Price: {formatEther(item.contractInformation.mintPrice)} Ξ
+                */}
                 <br />
                 <Link
                   onClick={(): void => {
-                    props.setRoute('/address/' + item.address);
+                    props.setRoute('/collections/' + item.address);
                   }}
-                  to={`/address/${item.address}`}>
+                  to={`/collections/${item.address}`}>
                   Go to collection&apos;s page
                 </Link>
               </List.Item>
@@ -248,30 +378,42 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
                 }}
               />
               <Input
-                style={{ marginTop: 8 }}
+                style={{ marginTop: 8, marginBottom: 8 }}
                 placeholder="Role"
                 onChange={(e): void => {
                   setRole(e.target.value);
                 }}
               />
+              <EtherInput
+                placeholder="mint price"
+                onChange={(value): void => setAmount(value)}
+                price={price}
+                value={amount}
+                etherMode={true}
+              />
               <Button
                 style={{ marginTop: 8 }}
                 onClick={async (): Promise<void> => {
-                  const result = tx?.(proxyContract?.mint(addressTo, nickname, role), (update: any) => {
-                    console.log('📡 Transaction Update:', update);
-                    if (update && (update.status === 'confirmed' || update.status === 1)) {
-                      console.log(' 🍾 Transaction ' + update.hash + ' finished!');
-                      console.log(
-                        ' ⛽️ ' +
-                          update.gasUsed +
-                          '/' +
-                          (update.gasLimit || update.gas) +
-                          ' @ ' +
-                          parseFloat(update.gasPrice) / 1000000000 +
-                          ' gwei'
-                      );
+                  const valueInEther = parseEther('' + amount);
+                  const result = tx?.(
+                    proxyContract?.mint(addressTo, nickname, role, { value: valueInEther }),
+                    (update: any) => {
+                      console.log('📡 Transaction Update:', update);
+                      if (update && (update.status === 'confirmed' || update.status === 1)) {
+                        console.log(' 🍾 Transaction ' + update.hash + ' finished!');
+                        console.log(
+                          ' ⛽️ ' +
+                            update.gasUsed +
+                            '/' +
+                            (update.gasLimit || update.gas) +
+                            ' @ ' +
+                            parseFloat(update.gasPrice) / 1000000000 +
+                            ' gwei'
+                        );
+                        void fetchProxyValues();
+                      }
                     }
-                  });
+                  );
                   console.log('awaiting metamask/web3 confirm result...', result);
                   console.log(await result);
                 }}>

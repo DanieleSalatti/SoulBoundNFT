@@ -23,6 +23,7 @@ export const MainPageMenu: FC<IMainPageMenuProps> = (props) => (
         Contracts
       </Link>
     </Menu.Item>
+    {/*
     <Menu.Item key="/hints">
       <Link
         onClick={(): void => {
@@ -31,16 +32,18 @@ export const MainPageMenu: FC<IMainPageMenuProps> = (props) => (
         to="/hints">
         Hints
       </Link>
-    </Menu.Item>
-    <Menu.Item key="/address/0x">
+      </Menu.Item>
+      */}
+    <Menu.Item key="/collections/">
       <Link
         onClick={(): void => {
-          props.setRoute('/address/0x');
+          props.setRoute('/collections/');
         }}
-        to="/address/0x">
+        to="/collections/">
         Collections
       </Link>
     </Menu.Item>
+    {/*
     <Menu.Item key="/mainnetdai">
       <Link
         onClick={(): void => {
@@ -50,6 +53,7 @@ export const MainPageMenu: FC<IMainPageMenuProps> = (props) => (
         Mainnet DAI
       </Link>
     </Menu.Item>
+    */}
     {/* <Menu.Item key="/subgraph">
       <Link
         onClick={() => {

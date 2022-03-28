@@ -30,6 +30,12 @@ export const contractConnectorConfig = () => {
         hardhatContractsJson
       ),
 
+      SoulBoundNFTProxyRegistry: createConnectorForHardhatContract(
+        'SoulBoundNFTProxyRegistry',
+        hardhatContracts.SoulBoundNFTProxyRegistry__factory,
+        hardhatContractsJson
+      ),
+
       // 🙋🏽‍♂️ Add your external contracts here, make sure to define the address in `externalContractsConfig.ts`
       DAI: createConnectorForExternalContract('DAI', externalContracts.DAI__factory, externalContractsAddressMap),
       UNI: createConnectorForExternalContract('UNI', externalContracts.UNI__factory, externalContractsAddressMap),

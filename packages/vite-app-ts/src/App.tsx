@@ -31,8 +31,8 @@ const savedTheme = window.localStorage.getItem('theme');
 
 // setup themes for theme switcher
 const themes = {
-  dark: './dark-theme.css',
-  light: './light-theme.css',
+  dark: '/dark-theme.css',
+  light: '/light-theme.css',
 };
 
 // create eth components context for options and API keys

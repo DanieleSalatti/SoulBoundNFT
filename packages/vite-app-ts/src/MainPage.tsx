@@ -69,7 +69,8 @@ export const Main: FC = () => {
   // -----------------------------
 
   // init contracts
-  const soulBoundNftFactory = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
+  const soulBoundNFTFactory = useAppContracts('SoulBoundNFTFactory', ethersContext.chainId);
+  const soulBoundNFTProxyRegistry = useAppContracts('SoulBoundNFTProxyRegistry', ethersContext.chainId);
 
   // keep track of a variable from the contract in the local React state:
   /*  const [purpose, update] = useContractReader(
@@ -116,7 +117,7 @@ export const Main: FC = () => {
               price={ethPrice}
             />
           </Route>
-          <Route path="/address/:contractAddress">
+          <Route path="/collections/:contractAddress?">
             <ExampleUI
               mainnetProvider={scaffoldAppProviders.mainnetAdaptor?.provider}
               yourCurrentBalance={yourCurrentBalance}

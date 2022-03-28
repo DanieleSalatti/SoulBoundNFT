@@ -19,10 +19,22 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     log: true,
   });
 
-  const sbFactoryDeployment = await deploy('SoulBoundNFTFactory', {
+  const sbProxyRegistryDeploymnet = await deploy('SoulBoundNFTProxyRegistry', {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
+    // args: ["Hello"],
     log: true,
   });
+
+  const sbProxyRegistry = await ethers.getContractAt('SoulBoundNFTProxyRegistry', sbProxyRegistryDeploymnet.address);
+
+  const sbFactoryDeployment = await deploy('SoulBoundNFTFactory', {
+    from: deployer,
+    args: [sbProxyRegistryDeploymnet.address],
+    log: true,
+  });
+
+  await sbProxyRegistry.setProxyFactory(sbFactoryDeployment.address);
 
   const sbFactory = await ethers.getContractAt('SoulBoundNFTFactory', sbFactoryDeployment.address);
 
@@ -50,6 +62,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   await sbFactory.transferOwnership(OWNER_ADDRESS);
   await upgradeableBeacon.transferOwnership(OWNER_ADDRESS);
+  await sbProxyRegistry.transferOwnership(OWNER_ADDRESS);
 };
 export default func;
 func.tags = ['SoulBoundNFT', 'SoulBoundNFTFactory'];
