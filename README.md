@@ -1,8 +1,8 @@
 # 🏗 Scaffold-Eth Typescript
 
-SoulBoundNFT at 0xddbf050ea6E0d2e152E480158ba809f49ac2337b
-SoulBoundNFTProxyRegistry at 0xe9f1F0fA12E3055aB879065eEf825ea8E7A58f48
-SoulBoundNFTFactory at 0x4B9652Bdd7f7a1AcB66299cEbFD2AE18C8934330
+SoulBoundNFT at [0xddbf050ea6E0d2e152E480158ba809f49ac2337b](https://rinkeby.etherscan.io/address/0xddbf050ea6E0d2e152E480158ba809f49ac2337b)
+SoulBoundNFTProxyRegistry at [0xe9f1F0fA12E3055aB879065eEf825ea8E7A58f48](https://rinkeby.etherscan.io/address/0xe9f1F0fA12E3055aB879065eEf825ea8E7A58f48)
+SoulBoundNFTFactory at [0x4B9652Bdd7f7a1AcB66299cEbFD2AE18C8934330](https://rinkeby.etherscan.io/address/0x4B9652Bdd7f7a1AcB66299cEbFD2AE18C8934330)
 
 UpgradeableBeaconCreated [
 Indexed { _isIndexed: true, hash: null },
