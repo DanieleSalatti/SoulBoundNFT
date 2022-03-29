@@ -1,5 +1,20 @@
 # 🏗 Scaffold-Eth Typescript
 
+SoulBoundNFT at 0xddbf050ea6E0d2e152E480158ba809f49ac2337b
+SoulBoundNFTProxyRegistry at 0xe9f1F0fA12E3055aB879065eEf825ea8E7A58f48
+SoulBoundNFTFactory at 0x4B9652Bdd7f7a1AcB66299cEbFD2AE18C8934330
+
+UpgradeableBeaconCreated [
+Indexed { _isIndexed: true, hash: null },
+'0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7',
+'0xddbf050ea6E0d2e152E480158ba809f49ac2337b',
+createdBy: Indexed { _isIndexed: true, hash: null },
+beacon: '0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7',
+initialImplementation: '0xddbf050ea6E0d2e152E480158ba809f49ac2337b'
+]
+
+upgradeableBeacon deployed to 0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7
+
 ## Typescript
 
 This is the typescript repo of scaffold.eth. The directories that you'll use are:
@@ -29,19 +44,18 @@ Running the app
 
    ```bash
    # build hardhat & external contracts types
-   yarn contracts:build 
+   yarn contracts:build
    # deploy your hardhat contracts
    yarn deploy
-   # start vite 
-   yarn start 
+   # start vite
+   yarn start
    ```
-   
+
 ## Guides
 
 - Check out [eth-hooks docs](https://scaffold-eth.github.io/eth-hooks/docs/overview) for example of how to use hooks
-- you can look at [speedrun ethereum](https://speedrunethereum.com/) to get started with scaffold-eth-typescript and web3.  
+- you can look at [speedrun ethereum](https://speedrunethereum.com/) to get started with scaffold-eth-typescript and web3.
   - 🏁 Make sure to click on the typescript tab!
-
 
 ## Overview
 
@@ -55,12 +69,12 @@ Everything you need to build on Ethereum! 🚀 Quickly experiment with Solidity 
 - 📱 Open http://localhost:3000 to see the app
 
 ## More Information!
+
 ### 📚 Documentation
 
 Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
 
-Eth-hooks documentation is [here](https://scaffold-eth.github.io/eth-hooks/).  Learn how to use the contexts here.
-
+Eth-hooks documentation is [here](https://scaffold-eth.github.io/eth-hooks/). Learn how to use the contexts here.
 
 ### 🔭 Learning Solidity
 
@@ -68,8 +82,8 @@ Read the docs: https://docs.soliditylang.org
 
 Go through each topic from [solidity by example](https://solidity-by-example.org) editing `YourContract.sol` in **🏗 scaffold-eth**
 
-
 ### 🏃💨 Speedrun Ethereum
+
 Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
 
 ### 🛠 Buidl
@@ -77,7 +91,6 @@ Register as a builder [here](https://speedrunethereum.com) and start on some of 
 Check out all the [active branches](https://github.com/austintgriffith/scaffold-eth/branches/active), [open issues](https://github.com/austintgriffith/scaffold-eth/issues), and join/fund the 🏰 [BuidlGuidl](https://BuidlGuidl.com)!
 
 [Follow the full Ethereum Speed Run](https://medium.com/@austin_48503/%EF%B8%8Fethereum-dev-speed-run-bd72bcba6a4c)
-
 
 ### 💌 P.S.
 

@@ -4,3 +4,4 @@
 !.gitignore
 !/contract-types
 !/external-contracts
+!hardhat_contracts.json
