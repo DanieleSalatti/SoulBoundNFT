@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./SoulBoundNFT.sol";
 import "./SoulBoundNFTProxyRegistry.sol";
 
+// TODO: make pausable
 contract SoulBoundNFTFactory is Ownable {
   //===== State =====//
 
