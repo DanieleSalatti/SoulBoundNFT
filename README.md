@@ -1,9 +1,38 @@
-# 🏗 Scaffold-Eth Typescript
+# SoulBound NFTs - The Membership Protocol
+
+The idea behind SoulBound NFTs is to have non-transferable, burnable, mintable, ERC721Votes NFTs. The graphic is based on SVGs.
+
+When a new membership token is created, the owner can set the SVG content of the membership. This graphic will be shared by all NFTs in the collection.
+
+They can work in 2 ways:
+
+1. A DAO or guild leader can mint NFTs to the addresses of users that earned the membership through e.g. work. 
+A nickname and role can be specified, and will be displayed at the bottom of the NFTs.
+2. A DAO or guild can decide to make the NFTs mintable as well, and set a mint price. The ETH goes into the contract and the DAO owner can withdraw at any time to a preset vault address (configurable). This is essentially a paid membership. A nickname can be specified, but the role is preset by the DAO.
+
+There are 3 contracts in use here. 
+
+1. The SoulBoundNFT itself, which represent the ERC721 token.
+2. A proxy factory, used to create an upgradeable beacon on deployment and to create new proxies owned by the DAOs or guilds
+3. A proxy registry, used to keep track of all the proxies, the addresses owning them and some other metadata. This is useful in case the proxy factory ever needs to be replaced.
+
+Since I cannot foresee all the possible use cases, transferability in this implementation can be toggled by the contract owner.
+
+It is currently live on Rinkeby and can be tested at (the UI is still pretty crude): https://soulbound.app/
+
+Example membership collection on OpenSea can be found [here](https://testnets.opensea.io/collection/ethereum-dao-membership).
+
+Built with [🏗 Scaffold-Eth Typescript](https://github.com/scaffold-eth/scaffold-eth-typescript)
+
+## Currently deployed on Rinkeby
 
 SoulBoundNFT at [0xddbf050ea6E0d2e152E480158ba809f49ac2337b](https://rinkeby.etherscan.io/address/0xddbf050ea6E0d2e152E480158ba809f49ac2337b)
+
 SoulBoundNFTProxyRegistry at [0xe9f1F0fA12E3055aB879065eEf825ea8E7A58f48](https://rinkeby.etherscan.io/address/0xe9f1F0fA12E3055aB879065eEf825ea8E7A58f48)
+
 SoulBoundNFTFactory at [0x4B9652Bdd7f7a1AcB66299cEbFD2AE18C8934330](https://rinkeby.etherscan.io/address/0x4B9652Bdd7f7a1AcB66299cEbFD2AE18C8934330)
 
+```
 UpgradeableBeaconCreated [
 Indexed { _isIndexed: true, hash: null },
 '0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7',
@@ -12,94 +41,6 @@ createdBy: Indexed { _isIndexed: true, hash: null },
 beacon: '0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7',
 initialImplementation: '0xddbf050ea6E0d2e152E480158ba809f49ac2337b'
 ]
-
-upgradeableBeacon deployed to 0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7
-
-## Typescript
-
-This is the typescript repo of scaffold.eth. The directories that you'll use are:
-
-```bash
-packages/vite-app-ts/
-packages/hardhat-ts/
 ```
 
-## Quick Start
-
-Running the app
-
-1. install your dependencies
-
-   ```bash
-   yarn install
-   ```
-
-2. start a hardhat node
-
-   ```bash
-   yarn chain
-   ```
-
-3. run the app, `open a new command prompt`
-
-   ```bash
-   # build hardhat & external contracts types
-   yarn contracts:build
-   # deploy your hardhat contracts
-   yarn deploy
-   # start vite
-   yarn start
-   ```
-
-## Guides
-
-- Check out [eth-hooks docs](https://scaffold-eth.github.io/eth-hooks/docs/overview) for example of how to use hooks
-- you can look at [speedrun ethereum](https://speedrunethereum.com/) to get started with scaffold-eth-typescript and web3.
-  - 🏁 Make sure to click on the typescript tab!
-
-## Overview
-
-Everything you need to build on Ethereum! 🚀 Quickly experiment with Solidity using a frontend that adapts to your smart contract:
-
-![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
-
-- 🔏 Edit your smart contract `YourContract.sol` in `packages/hardhat-ts/contracts`
-- 📝 Edit your frontend `MainPage.jsx` in `packages/vite-app-ts/src`
-- 💼 Edit your deployment scripts in `packages/hardhat-ts/deploy`
-- 📱 Open http://localhost:3000 to see the app
-
-## More Information!
-
-### 📚 Documentation
-
-Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
-
-Eth-hooks documentation is [here](https://scaffold-eth.github.io/eth-hooks/). Learn how to use the contexts here.
-
-### 🔭 Learning Solidity
-
-Read the docs: https://docs.soliditylang.org
-
-Go through each topic from [solidity by example](https://solidity-by-example.org) editing `YourContract.sol` in **🏗 scaffold-eth**
-
-### 🏃💨 Speedrun Ethereum
-
-Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
-
-### 🛠 Buidl
-
-Check out all the [active branches](https://github.com/austintgriffith/scaffold-eth/branches/active), [open issues](https://github.com/austintgriffith/scaffold-eth/issues), and join/fund the 🏰 [BuidlGuidl](https://BuidlGuidl.com)!
-
-[Follow the full Ethereum Speed Run](https://medium.com/@austin_48503/%EF%B8%8Fethereum-dev-speed-run-bd72bcba6a4c)
-
-### 💌 P.S.
-
-You need an RPC key for testnets and production deployments, create an [Alchemy](https://www.alchemy.com/) account and replace the value of `ALCHEMY_KEY = xxx` in `packages/react-app/src/constants.js` with your new key.
-
-### 💬 Support Chat
-
-Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA) to ask questions and find others building with 🏗 scaffold-eth!
-
-### 🙏🏽 Support us!
-
-Please check out our [Gitcoin grant](https://gitcoin.co/grants/2851/scaffold-eth) too!
+upgradeableBeacon deployed to 0xba7Ca1d46C5c74f8056dC70F831Cb5A41Bc9A2a7
