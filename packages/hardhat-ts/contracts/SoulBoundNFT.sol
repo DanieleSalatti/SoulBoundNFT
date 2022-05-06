@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
@@ -59,20 +59,23 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
 
   string internal _organization;
   string internal _defaultRole;
-  bool internal _transferable;
   bool internal _mintable;
+  bool internal isSvgToken;
   uint256 internal _mintPrice;
 
   address internal _vault;
 
   string internal svgLogo;
+  string public uriPrefix = "";
+  string public uriSuffix = ".json";
 
   mapping(uint256 => TokenOwnerInfo) internal _tokenOwnerInfo;
   mapping(uint256 => address) internal _mintedTo;
+  mapping(uint256 => bool) internal _transferable;
 
   //===== Events =====//
 
-  event ToggleTransferable(bool transferable);
+  event ToggleTransferable(uint256, bool transferable);
   event ToggleMintable(bool mintable);
 
   //===== Initializer =====//
@@ -87,7 +90,6 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     string memory symbol_,
     string memory organization_,
     string memory defaultRole_,
-    bool transferable_,
     bool mintable_,
     uint256 mintPrice_,
     address ownerOfToken
@@ -99,7 +101,6 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
 
     _organization = organization_;
     _defaultRole = defaultRole_;
-    _transferable = transferable_;
     _mintable = mintable_;
     _mintPrice = mintPrice_;
 
@@ -140,6 +141,7 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   }
 
   function setSvgLogo(string calldata _svgLogo) public onlyRole(MINTER_ROLE) {
+    isSvgToken = true;
     svgLogo = _svgLogo;
   }
 
@@ -150,24 +152,25 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     }
   }
 
-  function toggleTransferable() external onlyRole(PAUSER_ROLE) returns (bool) {
-    if (_transferable) {
-      _transferable = false;
+  function toggleTransferable(uint256 tokenId) external onlyRole(PAUSER_ROLE) returns (bool) {
+    if (_transferable[tokenId]) {
+      _transferable[tokenId] = false;
     } else {
-      _transferable = true;
+      _transferable[tokenId] = true;
     }
-    emit ToggleTransferable(_transferable);
-    return _transferable;
+    emit ToggleTransferable(tokenId, _transferable[tokenId]);
+    return _transferable[tokenId];
   }
 
   function toggleMintable() external onlyRole(MINTER_ROLE) returns (bool) {
-    if (_mintable) {
-      _mintable = false;
-    } else {
-      _mintable = true;
-    }
+    _mintable = !_mintable;
     emit ToggleMintable(_mintable);
     return _mintable;
+  }
+
+  function toggleIsSvgToken() external onlyRole(MINTER_ROLE) returns (bool) {
+    isSvgToken = !isSvgToken;
+    return isSvgToken;
   }
 
   function setMintPrice(uint256 mintPrice_) external onlyRole(MINTER_ROLE) {
@@ -176,6 +179,16 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
 
   function setDefaultRole(string memory defaultRole_) external onlyRole(MINTER_ROLE) {
     _defaultRole = defaultRole_;
+  }
+
+  function setUriPrefix(string memory _uriPrefix) public onlyRole(MINTER_ROLE) {
+    isSvgToken = false;
+    uriPrefix = _uriPrefix;
+  }
+
+  function setUriSuffix(string memory _uriSuffix) public onlyRole(MINTER_ROLE) {
+    isSvgToken = false;
+    uriSuffix = _uriSuffix;
   }
 
   //===== Public Functions =====//
@@ -208,8 +221,8 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     return _defaultRole;
   }
 
-  function transferable() public view returns (bool) {
-    return _transferable;
+  function transferable(uint256 tokenId) public view returns (bool) {
+    return _transferable[tokenId];
   }
 
   function mintable() public view returns (bool) {
@@ -242,8 +255,13 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   }
 
   function tokenURI(uint256 tokenId) public view override exists(tokenId) returns (string memory) {
-    TokenURIParams memory params = TokenURIParams(tokenId, mintedTo(tokenId), nickNameOf(tokenId), roleOf(tokenId), organization(), name());
-    return constructTokenURI(params);
+    if (isSvgToken) {
+      TokenURIParams memory params = TokenURIParams(tokenId, mintedTo(tokenId), nickNameOf(tokenId), roleOf(tokenId), organization(), name());
+      return constructTokenURI(params);
+    } else {
+      string memory currentBaseURI = _baseURI();
+      return bytes(currentBaseURI).length > 0 ? string(abi.encodePacked(currentBaseURI, Strings.toString(tokenId), uriSuffix)) : "";
+    }
   }
 
   function withdraw() public {
@@ -256,7 +274,7 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
   }
 
   // Added isTransferable only
-  function approve(address to, uint256 tokenId) public override isTransferable {
+  function approve(address to, uint256 tokenId) public override isTransferable(tokenId) {
     address ownerOfToken = ownerOf(tokenId);
     require(to != ownerOfToken, "ERC721: approval to current owner");
 
@@ -270,7 +288,7 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     address from,
     address to,
     uint256 tokenId
-  ) public override isTransferable whenNotPaused {
+  ) public override isTransferable(tokenId) whenNotPaused {
     //solhint-disable-next-line max-line-length
     require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
 
@@ -283,7 +301,7 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     address to,
     uint256 tokenId,
     bytes memory _data
-  ) public override isTransferable whenNotPaused {
+  ) public override isTransferable(tokenId) whenNotPaused {
     require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
     _safeTransfer(from, to, tokenId, _data);
   }
@@ -299,6 +317,7 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     _tokenOwnerInfo[tokenId].nickName = nickName;
     _tokenOwnerInfo[tokenId].role = role;
     _mintedTo[tokenId] = to;
+    _transferable[tokenId] = false;
     _safeMint(to, tokenId);
     _counter.increment();
   }
@@ -361,10 +380,14 @@ contract SoulBoundNFT is Initializable, AccessControlUpgradeable, ERC721VotesUpg
     /* solhint-enable */
   }
 
+  function _baseURI() internal view virtual override returns (string memory) {
+    return uriPrefix;
+  }
+
   //===== Modifiers =====//
 
-  modifier isTransferable() {
-    require(transferable() == true, "SoulBoundNFT: not transferable");
+  modifier isTransferable(uint256 tokenId) {
+    require(_transferable[tokenId] == true, "SoulBoundNFT: not transferable");
     _;
   }
 

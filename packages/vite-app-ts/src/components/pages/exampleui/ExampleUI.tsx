@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -37,7 +38,6 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
 
   type TProxyContractData = {
     organization: string;
-    transferable: boolean;
     nextId: BigNumber;
     paused: boolean;
     mintable: boolean;
@@ -127,16 +127,14 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
     if (proxyContract === undefined || proxyContract === null) return;
     await Promise.all([
       proxyContract.organization(),
-      proxyContract.transferable(),
       proxyContract.nextId(),
       proxyContract.paused(),
       proxyContract.mintable(),
       proxyContract.mintPrice(),
       proxyContract.version(),
-    ]).then(([organization, transferable, nextId, paused, mintable, mintPrice, version]) => {
+    ]).then(([organization, nextId, paused, mintable, mintPrice, version]) => {
       setProxyContractData({
         organization,
-        transferable,
         nextId,
         paused,
         mintable,
@@ -267,7 +265,6 @@ export const ExampleUI: FC<IExampleUIProps> = (props) => {
                   symbol,
                   organization,
                   defaultRole,
-                  transferable,
                   mintable,
                   parseEther('' + mintPrice),
                   address

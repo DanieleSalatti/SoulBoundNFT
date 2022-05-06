@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
@@ -28,19 +28,17 @@ contract SoulBoundNFTFactory is Ownable {
     string memory symbol,
     string memory organization,
     string memory defaultRole,
-    bool transferable,
     bool mintable,
     uint256 mintPrice,
     address tokenOwner
   ) internal pure returns (bytes memory) {
     return
       abi.encodeWithSignature(
-        "initialize(string,string,string,string,bool,bool,uint256,address)",
+        "initialize(string,string,string,string,bool,uint256,address)",
         name,
         symbol,
         organization,
         defaultRole,
-        transferable,
         mintable,
         mintPrice,
         tokenOwner
@@ -65,13 +63,12 @@ contract SoulBoundNFTFactory is Ownable {
     string memory symbol,
     string memory organization,
     string memory defaultRole,
-    bool transferable,
     bool mintable,
     uint256 mintPrice,
     address tokenOwner
   ) public returns (BeaconProxy beaconProxy) {
     address beaconAddress = proxyRegistry.beaconAddress();
-    bytes memory data = payload(name, symbol, organization, defaultRole, transferable, mintable, mintPrice, tokenOwner);
+    bytes memory data = payload(name, symbol, organization, defaultRole, mintable, mintPrice, tokenOwner);
     beaconProxy = new BeaconProxy(beaconAddress, data);
     proxyRegistry.registerBeaconProxy(address(beaconProxy), name, symbol, organization, tokenOwner);
     emit BeaconProxyCreated(beaconAddress, address(beaconProxy));

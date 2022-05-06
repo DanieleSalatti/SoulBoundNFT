@@ -54,10 +54,12 @@ export interface VotesUpgradeableInterface extends utils.Interface {
   events: {
     'DelegateChanged(address,address,address)': EventFragment;
     'DelegateVotesChanged(address,uint256,uint256)': EventFragment;
+    'Initialized(uint8)': EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: 'DelegateChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'DelegateVotesChanged'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'Initialized'): EventFragment;
 }
 
 export type DelegateChangedEvent = TypedEvent<
@@ -73,6 +75,10 @@ export type DelegateVotesChangedEvent = TypedEvent<
 >;
 
 export type DelegateVotesChangedEventFilter = TypedEventFilter<DelegateVotesChangedEvent>;
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export interface VotesUpgradeable extends BaseContract {
   contractName: 'VotesUpgradeable';
@@ -201,6 +207,9 @@ export interface VotesUpgradeable extends BaseContract {
       previousBalance?: null,
       newBalance?: null
     ): DelegateVotesChangedEventFilter;
+
+    'Initialized(uint8)'(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
   };
 
   estimateGas: {

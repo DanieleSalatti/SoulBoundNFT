@@ -1786,7 +1786,7 @@
       "chainId": "31337",
       "contracts": {
         "SoulBoundNFT": {
-          "address": "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3",
+          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "abi": [
             {
               "inputs": [],
@@ -1930,6 +1930,19 @@
               "inputs": [
                 {
                   "indexed": false,
+                  "internalType": "uint8",
+                  "name": "version",
+                  "type": "uint8"
+                }
+              ],
+              "name": "Initialized",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
                   "internalType": "address",
                   "name": "account",
                   "type": "address"
@@ -2029,6 +2042,12 @@
             {
               "anonymous": false,
               "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                },
                 {
                   "indexed": false,
                   "internalType": "bool",
@@ -2494,11 +2513,6 @@
                 },
                 {
                   "internalType": "bool",
-                  "name": "transferable_",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "bool",
                   "name": "mintable_",
                   "type": "bool"
                 },
@@ -2898,6 +2912,32 @@
             {
               "inputs": [
                 {
+                  "internalType": "string",
+                  "name": "_uriPrefix",
+                  "type": "string"
+                }
+              ],
+              "name": "setUriPrefix",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "_uriSuffix",
+                  "type": "string"
+                }
+              ],
+              "name": "setUriSuffix",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
                   "internalType": "bytes4",
                   "name": "interfaceId",
                   "type": "bytes4"
@@ -2929,7 +2969,7 @@
             },
             {
               "inputs": [],
-              "name": "toggleMintable",
+              "name": "toggleIsSvgToken",
               "outputs": [
                 {
                   "internalType": "bool",
@@ -2942,6 +2982,25 @@
             },
             {
               "inputs": [],
+              "name": "toggleMintable",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
               "name": "toggleTransferable",
               "outputs": [
                 {
@@ -3052,7 +3111,13 @@
               "type": "function"
             },
             {
-              "inputs": [],
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
               "name": "transferable",
               "outputs": [
                 {
@@ -3097,6 +3162,32 @@
             },
             {
               "inputs": [],
+              "name": "uriPrefix",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "",
+                  "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "uriSuffix",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "",
+                  "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "version",
               "outputs": [
                 {
@@ -3121,206 +3212,8 @@
             }
           ]
         },
-        "SoulBoundNFTFactory": {
-          "address": "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650",
-          "abi": [
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "_proxyRegistry",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "nonpayable",
-              "type": "constructor"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "beacon",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "beaconProxy",
-                  "type": "address"
-                }
-              ],
-              "name": "BeaconProxyCreated",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "previousOwner",
-                  "type": "address"
-                },
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "newOwner",
-                  "type": "address"
-                }
-              ],
-              "name": "OwnershipTransferred",
-              "type": "event"
-            },
-            {
-              "anonymous": false,
-              "inputs": [
-                {
-                  "indexed": true,
-                  "internalType": "address",
-                  "name": "createdBy",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "beacon",
-                  "type": "address"
-                },
-                {
-                  "indexed": false,
-                  "internalType": "address",
-                  "name": "initialImplementation",
-                  "type": "address"
-                }
-              ],
-              "name": "UpgradeableBeaconCreated",
-              "type": "event"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "organization",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "defaultRole",
-                  "type": "string"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "transferable",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "mintable",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "mintPrice",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "tokenOwner",
-                  "type": "address"
-                }
-              ],
-              "name": "newBeaconProxy",
-              "outputs": [
-                {
-                  "internalType": "contract BeaconProxy",
-                  "name": "beaconProxy",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "initialImplementation",
-                  "type": "address"
-                }
-              ],
-              "name": "newUpgradeableBeacon",
-              "outputs": [
-                {
-                  "internalType": "contract UpgradeableBeacon",
-                  "name": "beacon",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "owner",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "proxyRegistry",
-              "outputs": [
-                {
-                  "internalType": "contract SoulBoundNFTProxyRegistry",
-                  "name": "",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "renounceOwnership",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
-                  "name": "newOwner",
-                  "type": "address"
-                }
-              ],
-              "name": "transferOwnership",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            }
-          ]
-        },
         "SoulBoundNFTProxyRegistry": {
-          "address": "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0",
+          "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
           "abi": [
             {
               "inputs": [],
@@ -3539,6 +3432,199 @@
                 }
               ],
               "name": "setProxyFactory",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ]
+        },
+        "SoulBoundNFTFactory": {
+          "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "_proxyRegistry",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "beacon",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "beaconProxy",
+                  "type": "address"
+                }
+              ],
+              "name": "BeaconProxyCreated",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "previousOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "createdBy",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "beacon",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "initialImplementation",
+                  "type": "address"
+                }
+              ],
+              "name": "UpgradeableBeaconCreated",
+              "type": "event"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "symbol",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "organization",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "defaultRole",
+                  "type": "string"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "mintable",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "mintPrice",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "tokenOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "newBeaconProxy",
+              "outputs": [
+                {
+                  "internalType": "contract BeaconProxy",
+                  "name": "beaconProxy",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "initialImplementation",
+                  "type": "address"
+                }
+              ],
+              "name": "newUpgradeableBeacon",
+              "outputs": [
+                {
+                  "internalType": "contract UpgradeableBeacon",
+                  "name": "beacon",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "proxyRegistry",
+              "outputs": [
+                {
+                  "internalType": "contract SoulBoundNFTProxyRegistry",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "renounceOwnership",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"

@@ -92,6 +92,7 @@ export interface ERC721VotesUpgradeableInterface extends utils.Interface {
     'ApprovalForAll(address,address,bool)': EventFragment;
     'DelegateChanged(address,address,address)': EventFragment;
     'DelegateVotesChanged(address,uint256,uint256)': EventFragment;
+    'Initialized(uint8)': EventFragment;
     'Transfer(address,address,uint256)': EventFragment;
   };
 
@@ -99,6 +100,7 @@ export interface ERC721VotesUpgradeableInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: 'ApprovalForAll'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'DelegateChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'DelegateVotesChanged'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'Initialized'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'Transfer'): EventFragment;
 }
 
@@ -129,6 +131,10 @@ export type DelegateVotesChangedEvent = TypedEvent<
 >;
 
 export type DelegateVotesChangedEventFilter = TypedEventFilter<DelegateVotesChangedEvent>;
+
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
 export type TransferEvent = TypedEvent<[string, string, BigNumber], { from: string; to: string; tokenId: BigNumber }>;
 
@@ -412,6 +418,9 @@ export interface ERC721VotesUpgradeable extends BaseContract {
       previousBalance?: null,
       newBalance?: null
     ): DelegateVotesChangedEventFilter;
+
+    'Initialized(uint8)'(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
     'Transfer(address,address,uint256)'(
       from?: string | null,

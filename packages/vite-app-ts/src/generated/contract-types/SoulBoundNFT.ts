@@ -64,7 +64,7 @@ export interface SoulBoundNFTInterface extends utils.Interface {
     'getVotes(address)': FunctionFragment;
     'grantRole(bytes32,address)': FunctionFragment;
     'hasRole(bytes32,address)': FunctionFragment;
-    'initialize(string,string,string,string,bool,bool,uint256,address)': FunctionFragment;
+    'initialize(string,string,string,string,bool,uint256,address)': FunctionFragment;
     'isApprovedForAll(address,address)': FunctionFragment;
     'mint(address,string,string)': FunctionFragment;
     'mintPrice()': FunctionFragment;
@@ -86,16 +86,21 @@ export interface SoulBoundNFTInterface extends utils.Interface {
     'setDefaultRole(string)': FunctionFragment;
     'setMintPrice(uint256)': FunctionFragment;
     'setSvgLogo(string)': FunctionFragment;
+    'setUriPrefix(string)': FunctionFragment;
+    'setUriSuffix(string)': FunctionFragment;
     'supportsInterface(bytes4)': FunctionFragment;
     'symbol()': FunctionFragment;
+    'toggleIsSvgToken()': FunctionFragment;
     'toggleMintable()': FunctionFragment;
-    'toggleTransferable()': FunctionFragment;
+    'toggleTransferable(uint256)': FunctionFragment;
     'tokenDataOf(uint256)': FunctionFragment;
     'tokenURI(uint256)': FunctionFragment;
     'transferFrom(address,address,uint256)': FunctionFragment;
-    'transferable()': FunctionFragment;
+    'transferable(uint256)': FunctionFragment;
     'upgradeTo(address)': FunctionFragment;
     'upgradeToAndCall(address,bytes)': FunctionFragment;
+    'uriPrefix()': FunctionFragment;
+    'uriSuffix()': FunctionFragment;
     'version()': FunctionFragment;
     'withdraw()': FunctionFragment;
   };
@@ -126,7 +131,7 @@ export interface SoulBoundNFTInterface extends utils.Interface {
   encodeFunctionData(functionFragment: 'hasRole', values: [BytesLike, string]): string;
   encodeFunctionData(
     functionFragment: 'initialize',
-    values: [string, string, string, string, boolean, boolean, BigNumberish, string]
+    values: [string, string, string, string, boolean, BigNumberish, string]
   ): string;
   encodeFunctionData(functionFragment: 'isApprovedForAll', values: [string, string]): string;
   encodeFunctionData(functionFragment: 'mint', values: [string, string, string]): string;
@@ -149,16 +154,21 @@ export interface SoulBoundNFTInterface extends utils.Interface {
   encodeFunctionData(functionFragment: 'setDefaultRole', values: [string]): string;
   encodeFunctionData(functionFragment: 'setMintPrice', values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: 'setSvgLogo', values: [string]): string;
+  encodeFunctionData(functionFragment: 'setUriPrefix', values: [string]): string;
+  encodeFunctionData(functionFragment: 'setUriSuffix', values: [string]): string;
   encodeFunctionData(functionFragment: 'supportsInterface', values: [BytesLike]): string;
   encodeFunctionData(functionFragment: 'symbol', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'toggleIsSvgToken', values?: undefined): string;
   encodeFunctionData(functionFragment: 'toggleMintable', values?: undefined): string;
-  encodeFunctionData(functionFragment: 'toggleTransferable', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'toggleTransferable', values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: 'tokenDataOf', values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: 'tokenURI', values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: 'transferFrom', values: [string, string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: 'transferable', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'transferable', values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: 'upgradeTo', values: [string]): string;
   encodeFunctionData(functionFragment: 'upgradeToAndCall', values: [string, BytesLike]): string;
+  encodeFunctionData(functionFragment: 'uriPrefix', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'uriSuffix', values?: undefined): string;
   encodeFunctionData(functionFragment: 'version', values?: undefined): string;
   encodeFunctionData(functionFragment: 'withdraw', values?: undefined): string;
 
@@ -205,8 +215,11 @@ export interface SoulBoundNFTInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: 'setDefaultRole', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'setMintPrice', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'setSvgLogo', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'setUriPrefix', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'setUriSuffix', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'supportsInterface', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'symbol', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'toggleIsSvgToken', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'toggleMintable', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'toggleTransferable', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'tokenDataOf', data: BytesLike): Result;
@@ -215,6 +228,8 @@ export interface SoulBoundNFTInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: 'transferable', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'upgradeTo', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'upgradeToAndCall', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'uriPrefix', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'uriSuffix', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'version', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'withdraw', data: BytesLike): Result;
 
@@ -225,12 +240,13 @@ export interface SoulBoundNFTInterface extends utils.Interface {
     'BeaconUpgraded(address)': EventFragment;
     'DelegateChanged(address,address,address)': EventFragment;
     'DelegateVotesChanged(address,uint256,uint256)': EventFragment;
+    'Initialized(uint8)': EventFragment;
     'Paused(address)': EventFragment;
     'RoleAdminChanged(bytes32,bytes32,bytes32)': EventFragment;
     'RoleGranted(bytes32,address,address)': EventFragment;
     'RoleRevoked(bytes32,address,address)': EventFragment;
     'ToggleMintable(bool)': EventFragment;
-    'ToggleTransferable(bool)': EventFragment;
+    'ToggleTransferable(uint256,bool)': EventFragment;
     'Transfer(address,address,uint256)': EventFragment;
     'Unpaused(address)': EventFragment;
     'Upgraded(address)': EventFragment;
@@ -242,6 +258,7 @@ export interface SoulBoundNFTInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: 'BeaconUpgraded'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'DelegateChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'DelegateVotesChanged'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'Initialized'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'Paused'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'RoleAdminChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'RoleGranted'): EventFragment;
@@ -289,6 +306,10 @@ export type DelegateVotesChangedEvent = TypedEvent<
 
 export type DelegateVotesChangedEventFilter = TypedEventFilter<DelegateVotesChangedEvent>;
 
+export type InitializedEvent = TypedEvent<[number], { version: number }>;
+
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
+
 export type PausedEvent = TypedEvent<[string], { account: string }>;
 
 export type PausedEventFilter = TypedEventFilter<PausedEvent>;
@@ -312,7 +333,7 @@ export type ToggleMintableEvent = TypedEvent<[boolean], { mintable: boolean }>;
 
 export type ToggleMintableEventFilter = TypedEventFilter<ToggleMintableEvent>;
 
-export type ToggleTransferableEvent = TypedEvent<[boolean], { transferable: boolean }>;
+export type ToggleTransferableEvent = TypedEvent<[BigNumber, boolean], { arg0: BigNumber; transferable: boolean }>;
 
 export type ToggleTransferableEventFilter = TypedEventFilter<ToggleTransferableEvent>;
 
@@ -429,7 +450,6 @@ export interface SoulBoundNFT extends BaseContract {
       symbol_: string,
       organization_: string,
       defaultRole_: string,
-      transferable_: boolean,
       mintable_: boolean,
       mintPrice_: BigNumberish,
       ownerOfToken: string,
@@ -517,13 +537,28 @@ export interface SoulBoundNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setUriPrefix(
+      _uriPrefix: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setUriSuffix(
+      _uriSuffix: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     supportsInterface(interfaceId: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
+    toggleIsSvgToken(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+
     toggleMintable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
 
-    toggleTransferable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+    toggleTransferable(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     tokenDataOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<[SoulBoundNFT.TokenDataStructOutput]>;
 
@@ -536,7 +571,7 @@ export interface SoulBoundNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    transferable(overrides?: CallOverrides): Promise<[boolean]>;
+    transferable(tokenId: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     upgradeTo(
       newImplementation: string,
@@ -548,6 +583,10 @@ export interface SoulBoundNFT extends BaseContract {
       data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    uriPrefix(overrides?: CallOverrides): Promise<[string]>;
+
+    uriSuffix(overrides?: CallOverrides): Promise<[string]>;
 
     version(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -631,7 +670,6 @@ export interface SoulBoundNFT extends BaseContract {
     symbol_: string,
     organization_: string,
     defaultRole_: string,
-    transferable_: boolean,
     mintable_: boolean,
     mintPrice_: BigNumberish,
     ownerOfToken: string,
@@ -719,13 +757,28 @@ export interface SoulBoundNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setUriPrefix(
+    _uriPrefix: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setUriSuffix(
+    _uriSuffix: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   supportsInterface(interfaceId: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
+  toggleIsSvgToken(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+
   toggleMintable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
 
-  toggleTransferable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+  toggleTransferable(
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   tokenDataOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<SoulBoundNFT.TokenDataStructOutput>;
 
@@ -738,7 +791,7 @@ export interface SoulBoundNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  transferable(overrides?: CallOverrides): Promise<boolean>;
+  transferable(tokenId: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   upgradeTo(
     newImplementation: string,
@@ -750,6 +803,10 @@ export interface SoulBoundNFT extends BaseContract {
     data: BytesLike,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  uriPrefix(overrides?: CallOverrides): Promise<string>;
+
+  uriSuffix(overrides?: CallOverrides): Promise<string>;
 
   version(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -811,7 +868,6 @@ export interface SoulBoundNFT extends BaseContract {
       symbol_: string,
       organization_: string,
       defaultRole_: string,
-      transferable_: boolean,
       mintable_: boolean,
       mintPrice_: BigNumberish,
       ownerOfToken: string,
@@ -873,13 +929,19 @@ export interface SoulBoundNFT extends BaseContract {
 
     setSvgLogo(_svgLogo: string, overrides?: CallOverrides): Promise<void>;
 
+    setUriPrefix(_uriPrefix: string, overrides?: CallOverrides): Promise<void>;
+
+    setUriSuffix(_uriSuffix: string, overrides?: CallOverrides): Promise<void>;
+
     supportsInterface(interfaceId: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
+    toggleIsSvgToken(overrides?: CallOverrides): Promise<boolean>;
+
     toggleMintable(overrides?: CallOverrides): Promise<boolean>;
 
-    toggleTransferable(overrides?: CallOverrides): Promise<boolean>;
+    toggleTransferable(tokenId: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
     tokenDataOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<SoulBoundNFT.TokenDataStructOutput>;
 
@@ -887,11 +949,15 @@ export interface SoulBoundNFT extends BaseContract {
 
     transferFrom(from: string, to: string, tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    transferable(overrides?: CallOverrides): Promise<boolean>;
+    transferable(tokenId: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
     upgradeTo(newImplementation: string, overrides?: CallOverrides): Promise<void>;
 
     upgradeToAndCall(newImplementation: string, data: BytesLike, overrides?: CallOverrides): Promise<void>;
+
+    uriPrefix(overrides?: CallOverrides): Promise<string>;
+
+    uriSuffix(overrides?: CallOverrides): Promise<string>;
 
     version(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -941,6 +1007,9 @@ export interface SoulBoundNFT extends BaseContract {
       newBalance?: null
     ): DelegateVotesChangedEventFilter;
 
+    'Initialized(uint8)'(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
+
     'Paused(address)'(account?: null): PausedEventFilter;
     Paused(account?: null): PausedEventFilter;
 
@@ -972,8 +1041,8 @@ export interface SoulBoundNFT extends BaseContract {
     'ToggleMintable(bool)'(mintable?: null): ToggleMintableEventFilter;
     ToggleMintable(mintable?: null): ToggleMintableEventFilter;
 
-    'ToggleTransferable(bool)'(transferable?: null): ToggleTransferableEventFilter;
-    ToggleTransferable(transferable?: null): ToggleTransferableEventFilter;
+    'ToggleTransferable(uint256,bool)'(arg0?: null, transferable?: null): ToggleTransferableEventFilter;
+    ToggleTransferable(arg0?: null, transferable?: null): ToggleTransferableEventFilter;
 
     'Transfer(address,address,uint256)'(
       from?: string | null,
@@ -1061,7 +1130,6 @@ export interface SoulBoundNFT extends BaseContract {
       symbol_: string,
       organization_: string,
       defaultRole_: string,
-      transferable_: boolean,
       mintable_: boolean,
       mintPrice_: BigNumberish,
       ownerOfToken: string,
@@ -1146,13 +1214,22 @@ export interface SoulBoundNFT extends BaseContract {
 
     setSvgLogo(_svgLogo: string, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
 
+    setUriPrefix(_uriPrefix: string, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+
+    setUriSuffix(_uriSuffix: string, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+
     supportsInterface(interfaceId: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
+    toggleIsSvgToken(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+
     toggleMintable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
 
-    toggleTransferable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    toggleTransferable(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     tokenDataOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1165,7 +1242,7 @@ export interface SoulBoundNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    transferable(overrides?: CallOverrides): Promise<BigNumber>;
+    transferable(tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     upgradeTo(
       newImplementation: string,
@@ -1177,6 +1254,10 @@ export interface SoulBoundNFT extends BaseContract {
       data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    uriPrefix(overrides?: CallOverrides): Promise<BigNumber>;
+
+    uriSuffix(overrides?: CallOverrides): Promise<BigNumber>;
 
     version(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1261,7 +1342,6 @@ export interface SoulBoundNFT extends BaseContract {
       symbol_: string,
       organization_: string,
       defaultRole_: string,
-      transferable_: boolean,
       mintable_: boolean,
       mintPrice_: BigNumberish,
       ownerOfToken: string,
@@ -1349,13 +1429,28 @@ export interface SoulBoundNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setUriPrefix(
+      _uriPrefix: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setUriSuffix(
+      _uriSuffix: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(interfaceId: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    toggleIsSvgToken(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
+
     toggleMintable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
 
-    toggleTransferable(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
+    toggleTransferable(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     tokenDataOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1368,7 +1463,7 @@ export interface SoulBoundNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    transferable(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    transferable(tokenId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     upgradeTo(
       newImplementation: string,
@@ -1380,6 +1475,10 @@ export interface SoulBoundNFT extends BaseContract {
       data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    uriPrefix(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    uriSuffix(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     version(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

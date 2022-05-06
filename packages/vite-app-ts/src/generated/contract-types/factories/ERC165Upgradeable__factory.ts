@@ -8,6 +8,19 @@ import type { ERC165Upgradeable, ERC165UpgradeableInterface } from '../ERC165Upg
 
 const _abi = [
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint8',
+        name: 'version',
+        type: 'uint8',
+      },
+    ],
+    name: 'Initialized',
+    type: 'event',
+  },
+  {
     inputs: [
       {
         internalType: 'bytes4',

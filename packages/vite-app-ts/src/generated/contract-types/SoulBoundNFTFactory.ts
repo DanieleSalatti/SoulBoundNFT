@@ -20,7 +20,7 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from './common';
 export interface SoulBoundNFTFactoryInterface extends utils.Interface {
   contractName: 'SoulBoundNFTFactory';
   functions: {
-    'newBeaconProxy(string,string,string,string,bool,bool,uint256,address)': FunctionFragment;
+    'newBeaconProxy(string,string,string,string,bool,uint256,address)': FunctionFragment;
     'newUpgradeableBeacon(address)': FunctionFragment;
     'owner()': FunctionFragment;
     'proxyRegistry()': FunctionFragment;
@@ -30,7 +30,7 @@ export interface SoulBoundNFTFactoryInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: 'newBeaconProxy',
-    values: [string, string, string, string, boolean, boolean, BigNumberish, string]
+    values: [string, string, string, string, boolean, BigNumberish, string]
   ): string;
   encodeFunctionData(functionFragment: 'newUpgradeableBeacon', values: [string]): string;
   encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
@@ -100,7 +100,6 @@ export interface SoulBoundNFTFactory extends BaseContract {
       symbol: string,
       organization: string,
       defaultRole: string,
-      transferable: boolean,
       mintable: boolean,
       mintPrice: BigNumberish,
       tokenOwner: string,
@@ -129,7 +128,6 @@ export interface SoulBoundNFTFactory extends BaseContract {
     symbol: string,
     organization: string,
     defaultRole: string,
-    transferable: boolean,
     mintable: boolean,
     mintPrice: BigNumberish,
     tokenOwner: string,
@@ -158,7 +156,6 @@ export interface SoulBoundNFTFactory extends BaseContract {
       symbol: string,
       organization: string,
       defaultRole: string,
-      transferable: boolean,
       mintable: boolean,
       mintPrice: BigNumberish,
       tokenOwner: string,
@@ -204,7 +201,6 @@ export interface SoulBoundNFTFactory extends BaseContract {
       symbol: string,
       organization: string,
       defaultRole: string,
-      transferable: boolean,
       mintable: boolean,
       mintPrice: BigNumberish,
       tokenOwner: string,
@@ -234,7 +230,6 @@ export interface SoulBoundNFTFactory extends BaseContract {
       symbol: string,
       organization: string,
       defaultRole: string,
-      transferable: boolean,
       mintable: boolean,
       mintPrice: BigNumberish,
       tokenOwner: string,
